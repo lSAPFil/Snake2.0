@@ -10,7 +10,7 @@ public class Snake {
     private Bitmap bm, bm_heard_up,bm_heard_down,bm_heard_right, bm_heard_left, bm_body_vertical,
     bm_Body_horisontal,bm_body_top_right, bm_body_top_left, bm_body_buttom_right, bm_body_buttom_left,
     bm_tail_right, bm_tail_left, bm_tail_up, bm_tail_down;
-    private int x, y, lenght;
+    private static int x, y, lenght;
     private ArrayList<PartSnake> arrPartSnake=new ArrayList<>();
 
     public Snake(Bitmap bm, int x, int y, int lenght){
@@ -32,6 +32,7 @@ public class Snake {
         bm_tail_right=Bitmap.createBitmap(bm,11*GameView.sizeOfMap,0,GameView.sizeOfMap,GameView.sizeOfMap);
         bm_tail_left=Bitmap.createBitmap(bm,12*GameView.sizeOfMap,0,GameView.sizeOfMap,GameView.sizeOfMap);
         bm_tail_down=Bitmap.createBitmap(bm,13*GameView.sizeOfMap,0,GameView.sizeOfMap,GameView.sizeOfMap);
+
         arrPartSnake.add(new PartSnake(bm_heard_right,x,y));
         for(int i=1;i<(lenght-1);i++){
             arrPartSnake.add(new PartSnake(bm_Body_horisontal,arrPartSnake.get(i-1).getX()-GameView.sizeOfMap,y));
@@ -72,13 +73,14 @@ public class Snake {
                     &&arrPartSnake.get(i).getrButtom().intersect(arrPartSnake.get(i-1).getrBody())
                     ||arrPartSnake.get(i).getrRight().intersect(arrPartSnake.get(i-1).getrBody())
                     &&arrPartSnake.get(i).getrButtom().intersect(arrPartSnake.get(i+1).getrBody())){
-                arrPartSnake.get(i).setBm(bm_body_buttom_right);
+//                Log.d("ANIMATION", "update: 1");
+               arrPartSnake.get(i).setBm(bm_body_buttom_right);
 
             }else if(arrPartSnake.get(i).getrLeft().intersect(arrPartSnake.get(i+1).getrBody())
                     &&arrPartSnake.get(i).getrTop().intersect(arrPartSnake.get(i-1).getrBody())
                     ||arrPartSnake.get(i).getrLeft().intersect(arrPartSnake.get(i-1).getrBody())
                     &&arrPartSnake.get(i).getrTop().intersect(arrPartSnake.get(i+1).getrBody())){
-                arrPartSnake.get(i).setBm(bm_body_top_left);
+                  arrPartSnake.get(i).setBm(bm_body_top_left);
 
             }else if(arrPartSnake.get(i).getrRight().intersect(arrPartSnake.get(i+1).getrBody())
                     &&arrPartSnake.get(i).getrTop().intersect(arrPartSnake.get(i-1).getrBody())
@@ -100,20 +102,20 @@ public class Snake {
             }
         }
         if(arrPartSnake.get(lenght-1).getrRight().intersect(arrPartSnake.get(lenght-2).getrBody())){
-            arrPartSnake.get(lenght-1).setBm(bm_tail_right);
+              arrPartSnake.get(lenght-1).setBm(bm_tail_right);
         }else if(arrPartSnake.get(lenght-1).getrLeft().intersect(arrPartSnake.get(lenght-2).getrBody())){
-            arrPartSnake.get(lenght-1).setBm(bm_tail_left);
+              arrPartSnake.get(lenght-1).setBm(bm_tail_left);
         }else if(arrPartSnake.get(lenght-1).getrTop().intersect(arrPartSnake.get(lenght-2).getrBody())){
-            arrPartSnake.get(lenght-1).setBm(bm_tail_up);
+              arrPartSnake.get(lenght-1).setBm(bm_tail_up);
         }else if(arrPartSnake.get(lenght-1).getrButtom().intersect(arrPartSnake.get(lenght-2).getrBody())){
-            arrPartSnake.get(lenght-1).setBm(bm_tail_down);
+              arrPartSnake.get(lenght-1).setBm(bm_tail_down);
         }
     }
 
 
     public void draw(Canvas canvas){
         for(int i=0; i<lenght;i++){
-            canvas.drawBitmap(arrPartSnake.get(i).getBm(),arrPartSnake.get(i).getX(),arrPartSnake.get(i).getY(),null);//////////
+            canvas.drawBitmap(arrPartSnake.get(i).getBm(),arrPartSnake.get(i).getX(),arrPartSnake.get(i).getY(),null);
         }
     }
 

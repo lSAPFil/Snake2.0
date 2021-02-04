@@ -7,8 +7,10 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
-    int valueApple=0;
-
+    public static int valueApple = 0 ;
+//    public static int valueRecord = 0 ;
+    public TextView appleValue;
+//    public TextView recordValue;
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -17,11 +19,16 @@ public class MainActivity extends AppCompatActivity {
         Constanta.SCREEN_WIDH=dm.widthPixels;
         Constanta.SCREEEN_HEIGHT=dm.heightPixels;
         setContentView(R.layout.activity_main);
-        TextView appleValue=findViewById(R.id.txt_score);
+        GameView g= findViewById(R.id.gv);
+
+        appleValue=findViewById(R.id.txt_score);
+//        recordValue=findViewById(R.id.txt_best_score);
+        g.main = this;
+//           Log.d("start", "HELLO WORLD");
+
+        appleValue.setText(Integer.toString(valueApple));
+//        recordValue.setText(Integer.toString(valueRecord));
     }
-    public void onValue(){
-        TextView appleValue=findViewById(R.id.txt_score);
-        GameView g= new GameView(this, null);
-        appleValue.setText(Integer.toString(g.valueApple));
-    }
+
 }
+
