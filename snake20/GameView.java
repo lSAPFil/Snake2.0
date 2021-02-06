@@ -7,9 +7,10 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import androidx.annotation.Nullable;
 
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class GameView extends View {
-    private Bitmap bmGrass1,bmGrass2, bmSnake, bmApple;
+    private Bitmap bmGrass1,bmGrass2, bmSnake, bmApple,bmWall;
     private int h=21, w=12;
     public static int sizeOfMap=75*Constanta.SCREEN_WIDH/1080;
     private ArrayList<Grass> arrGrass=new ArrayList<>();
@@ -30,7 +31,22 @@ public class GameView extends View {
     private Apple apple;
     private boolean dead=false;
     public int valueApple=0;
-//    public int valueRecords;
+    public boolean touch=true;
+    public boolean guide=true;
+    public boolean guideOne=true;
+    public boolean guideTwo=true;
+    public boolean guideThree=true;
+    public boolean guideFhour=true;
+    public boolean guideFive=true;
+    public boolean guide2=false;
+    public boolean restart=false;
+    public ImageView imaga;
+    public ImageView image1;
+    public ImageView image2;
+    public ImageView image3;
+    public ImageView image4;
+    public RelativeLayout imaga1;
+    public long start = System.currentTimeMillis();
     public GameView(Context context, @Nullable AttributeSet attrs){ /////////Данный класс отрисовывается только один раз. Он не повторяется (на случай если ты будешь сомневаться)
         super(context, attrs);
         bmGrass1= BitmapFactory.decodeResource(this.getResources(),R.drawable.grass);
@@ -41,7 +57,8 @@ public class GameView extends View {
         bmSnake=Bitmap.createScaledBitmap(bmSnake,14*sizeOfMap,sizeOfMap,true);
         bmApple= BitmapFactory.decodeResource(this.getResources(),R.drawable.apple);
         bmApple=Bitmap.createScaledBitmap(bmApple,sizeOfMap,sizeOfMap,true);
-
+        bmWall=BitmapFactory.decodeResource(this.getResources(),R.drawable.wall);
+        bmWall=Bitmap.createScaledBitmap(bmWall,sizeOfMap,sizeOfMap,true);
         for(int i=0;i<(h+1);i++)
         {
             for(int j=0;j<(w+1);j++)
@@ -56,7 +73,6 @@ public class GameView extends View {
                 }
             }
         }
-
         snake=new Snake(bmSnake,arrGrass.get(4).getX(),arrGrass.get(70).getY(),4);///285 285 (границы (на 286 прога вылетает по причине выхода за границы. Значт буду килить змейку на 0 и 285 клетке))
         apple=new Apple(bmApple,arrGrass.get(randomApple()[0]).getX(),arrGrass.get(randomApple()[1]).getX());
         handler = new Handler();
@@ -110,47 +126,147 @@ public class GameView extends View {
     }
 
     @Override
-    public void draw(Canvas canvas) {
+    public void draw(Canvas canvas){
+
         super.draw(canvas);
+
         canvas.drawColor(0xFF1B007C);
+
+
         for (int i=0; i<arrGrass.size();i++){
             canvas.drawBitmap(arrGrass.get(i).getBm(),arrGrass.get(i).getX(),arrGrass.get(i).getY(), null);
         }
-        snake.update();
-        snake.draw(canvas);
-        apple.draw(canvas);
-        if(snake.getArrPartSnake().get(0).getrBody().intersect(apple.getR())){
-            randomApple();
-            this.valueApple++;
-            main.appleValue.setText(Integer.toString(this.valueApple));
-            apple.reset(arrGrass.get(randomApple()[0]).getX(),arrGrass.get(randomApple()[1]).getY());
-            snake.addPart();
+        int p=0;
+        ////////////////////////////////////////////////////////////////////////
+        /////СТАРЫЙ ВАР (без картинок)
+        ////////////////////////////////////////////////////////////////////////
+        if(guide==true){
+           if(move==true){
+               imaga.setVisibility(INVISIBLE);
+               guide2=true;
+           }
         }
-        handler.postDelayed(r,100);
 
+            if(guide2==true){
+                snake.update();
+                snake.draw(canvas);
+                apple.draw(canvas);
+            }
+///////////////////////////////////////////////////////////////////////////
+//        НОВЫЙ ВАР, КОТОРЫЙ НЕ РАБОТАЕТ, сволочь
+/////////////////////////////////////////////////////////////////////////
 
-    /////////////////////////////ПРОБЛЕМНЫЙ МОМЕЕЕНТ////////////////////////////////////////////
-//        КРЧ, ЗАКОММЕНЧЕННЫЙ ЦИКЛ РАБОЧИЙ. Я ПЫТАЮСЬ ПРОПИСАТЬ УСЛОВИЯ СМЕРТИ ЗМЕЙКИ. СО СТОЛКНОВЕНИЕМ СО СВОИМ ТЕЛОМ ОНА УМИРАЕТ (чек дебаг)
-//        for (int i=1; i!=snake.getArrPartSnake().size();i++){
-//            if (snake.getArrPartSnake().get(0).getrBody().intersect(snake.getArrPartSnake().get(i).getrBody())){/////
-//                dead=true;
-//                Log.d("start", "Фор на столкновение с телом");
+//            if(guide==true){
+//                if(move==true){
+//                    image1.setVisibility(INVISIBLE);
+//                    image2.setVisibility(VISIBLE);
+//                    guideOne=false;
+//                }
+//                if(guideOne==false){
+//                    if(move=true){
+//                        image2.setVisibility(INVISIBLE);
+//                        image3.setVisibility(VISIBLE);
+//                        guideTwo=false;
+//                        guideOne=true;
+//                    }
+//                }
+//                if(guideTwo==false){
+//                    if(move=true){
+//                        image3.setVisibility(INVISIBLE);
+//                        image4.setVisibility(VISIBLE);
+//                        guideThree=false;
+//                        guideTwo=true;
+//                    }
+//                }
+//                if(guideThree==false){
+//                    if(move=true){
+//                        image4.setVisibility(INVISIBLE);
+//                        imaga.setVisibility(VISIBLE);
+//                        guideFhour=false;
+//                        guideThree=true;
+//                    }
+//                }
+//                if(guideFhour==false){
+//                    if(move=true){
+//                        image4.setVisibility(INVISIBLE);
+//                        imaga.setVisibility(VISIBLE);
+//                        guide2=false;
+//                        guideFhour=true;
+//                    }
+//                }
 //            }
+//        if(guide2==true){
+//            snake.update();
+//            snake.draw(canvas);
+//            apple.draw(canvas);
 //        }
-//        А ВОТ ПРИ СТОЛКНОВЕНИИ С ГРАНИЦЕЙ КАРТЫ НИЧО НЕ ПРОИСХОДИТ. ПОЧЕМУ? ПОТОМУ ЧТО В ДУШЕ НЕ ШАРЮ, КАК ПИСАТЬ УСЛОВИЕ
-//        типа я пыталась прописать координату границы карты (если что границы карты ет значения 285, что для Х, что для У.)
+//
+        ///////////////////////////////////////////////////////////////////////////////////////////
+            if(snake.getArrPartSnake().get(0).getrBody().intersect(apple.getR())){
+                randomApple();
+                this.valueApple++;
+                apple.reset(arrGrass.get(randomApple()[0]).getX(),arrGrass.get(randomApple()[1]).getY());
+                main.appleValue.setText(Integer.toString(this.valueApple));
+                snake.addPart();
+                //Log.d("start", "Яблоко скушано");
+                this.start= System.currentTimeMillis();
 
-        if(snake.getArrPartSnake().get(0).getrBody().intersect(arrGrass.get(284).getX())){
-                dead=true;
-                 Log.d("start", "Фор на столкновение со стеной1");
-        }
-//        НУ И САМО СОБОЙ УСЛОВИЕ НА СЧЕТ СМЕРТИ ТОЖ РАБОЧЕЕ (хз зачем ет написала ес все и так пнтна)
-        if (dead==true) {
-            Log.d("start", "Змейка умерла");
-            dead=false;////delete (Написала для того, чтобы дебагер потом не спамил мне каждый шаг напоминанием о том, что она уже сдохла)
-        }
+            }else{
+                long finish = System.currentTimeMillis();
+                if(finish-this.start>=2000){
+                    apple.reset(arrGrass.get(randomApple()[0]).getX(),arrGrass.get(randomApple()[1]).getY());
+                    //Log.d("start", "Рандом яблока");
+                    this.start= System.currentTimeMillis();
+                }
+            }
+
+            handler.postDelayed(r,100);
+
+
+            for (int i=1; i!=snake.getArrPartSnake().size();i++){
+                if (snake.getArrPartSnake().get(0).getrBody().intersect(snake.getArrPartSnake().get(i).getrBody())){/////
+                    dead=true;
+                }
+            }
+
+            for(int i=0;i<=21;i++)
+            {
+                if(i<=12 &&snake.getArrPartSnake().get(0).getrBody().intersect(arrGrass.get(i).getR())){
+                    dead=true;
+                }
+                if(snake.getArrPartSnake().get(0).getrBody().intersect(arrGrass.get(i*13).getR())){
+                    dead=true;
+                }
+                if(i>=1 && snake.getArrPartSnake().get(0).getrBody().intersect(arrGrass.get(i*13-1).getR())){
+                    dead=true;
+                }
+                if(i<=12 && snake.getArrPartSnake().get(0).getrBody().intersect(arrGrass.get(272+i).getR())){
+                    dead=true;
+                }
+                if(dead==true){
+                    //Log.d("start", "Змейка умерла");
+                    super.draw(canvas);
+
+                    canvas.drawColor(0xFF1B007C);
+
+
+                    for (int j=0; j<arrGrass.size();j++){
+                        canvas.drawBitmap(arrGrass.get(j).getBm(),arrGrass.get(j).getX(),arrGrass.get(j).getY(), null);
+                    }
+
+                    main.recordValue.setText(Integer.toString(this.valueApple));
+                    imaga1.setVisibility(View.VISIBLE);
+                    if(move==true){
+                        imaga1.setVisibility(View.INVISIBLE);
+                        System.exit(0);
+                    }
+                }
+
+
+            }
+
+
     }
-
 
     public <valueApple> int[] randomApple(){
         int []xy=new int[2];
@@ -176,24 +292,4 @@ public class GameView extends View {
     }
 
 
-
-
-
-    public void reserv_tipa_dead(){ /// Класс не рабочий и, скорее всего, я его и вовсе удалю. Он у меня тута как черновик. Вот и все)
-//        КСТАТИ, ТУТ ТЫ МОЖЕШЬ УВИДЕТЬ ПЕРВЫЙ ВАР УСЛОВИЯ, НА КОТОРОЕ НЕ РУГАЕТСЯ intersect(). Но оно само собой ломается, ибо невернааа.
-//        Я мало инфы нашла по intersect() такшт толком не знаю какие значения ему могут показаться невкусными.
-        for (int i=0; i>=0;i++){
-            if (snake.getArrPartSnake().get(0).getrBody().intersect(snake.getArrPartSnake().get(i).getrBody())){
-                dead=true;
-            }
-            else if(snake.getArrPartSnake().get(0).getrBody().intersect(arrGrass.get(285).getX(),arrGrass.get(285).getY(),arrGrass.get(0).getX(),arrGrass.get(0).getY())){
-                dead=true;
-            }
-        }
-
-        if (dead=true){
-            Log.d("start", "dead=false");
-        }
-
-    }
 }
