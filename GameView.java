@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -26,12 +27,14 @@ public class GameView extends View {
     private boolean move=false;
     private float mx,my;
     private Handler handler;
-    private Runnable r;
+    private Runnable r ;
+    private Runnable runnable ;
     public MainActivity main;
     private Apple apple;
     private boolean dead=false;
     public int valueApple=0;
     private Timer timer;
+    public long start = System.currentTimeMillis();
 
 //    public int valueRecords;
     public GameView(Context context, @Nullable AttributeSet attrs){ /////////Данный класс отрисовывается только один раз. Он не повторяется (на случай если ты будешь сомневаться)
@@ -66,7 +69,6 @@ public class GameView extends View {
         r=new Runnable() {
             @Override
             public void run() {
-                //handler.postDelayed(this,1000);
                 invalidate();
             }
         };
@@ -114,7 +116,12 @@ public class GameView extends View {
     }
 
     @Override
-    public void draw(Canvas canvas) {
+    public void draw(Canvas canvas){
+        if(canvas==null){
+            Log.d("start", "КОНЕЦ");
+            SystemClock.sleep(10000);
+        }
+
         super.draw(canvas);
         timer = new Timer();
         canvas.drawColor(0xFF1B007C);
@@ -133,117 +140,23 @@ public class GameView extends View {
             main.appleValue.setText(Integer.toString(this.valueApple));
             snake.addPart();
             Log.d("start", "Яблоко скушано");
+            this.start= System.currentTimeMillis();
 
-        }else {
-            int i=0;
-            while (true){
-                if(handler.postDelayed(r,2000)){
-                    i++;
-                    Log.d("start", "Счет передвижений змейки");
-                    if(i%5==0){
-                        randomApple();
-                        apple.reset(arrGrass.get(randomApple()[0]).getX(),arrGrass.get(randomApple()[1]).getY());
-                        //handler.postDelayed(r,100);
-                        Log.d("start", "Рандом яблока");
-                    break;
-                   }
-
-                }
+        }else{
+            long finish = System.currentTimeMillis();
+            if(finish-this.start>=2000){
+                apple.reset(arrGrass.get(randomApple()[0]).getX(),arrGrass.get(randomApple()[1]).getY());
+                Log.d("start", "Рандом яблока");
+                this.start= System.currentTimeMillis();
             }
-
         }
-        handler.postDelayed(r,2000);
 
-
-
-//            {
-//            Thread thread = new Thread();
-//            thread.start();
-//            try {
-//                Thread.sleep(1000);
-//                apple.reset(arrGrass.get(randomApple()[0]).getX(),arrGrass.get(randomApple()[1]).getY());
-//            } catch (InterruptedException e) {
-//                Thread.currentThread().interrupt();
-//            }
-//
-//            thread.interrupt();
-//
-//        }
-
-
-//            {
-//            int i=0;
-//            while (handler.postDelayed(r,100)){
-//                i++;
-//                Log.d("start", "Счет передвижений змейки");
-//                if(i%1000==0){
-//                    apple.reset(arrGrass.get(randomApple()[0]).getX(),arrGrass.get(randomApple()[1]).getY());
-//                    //handler.postDelayed(r,100);
-//                    Log.d("start", "Рандом яблока");
-//                    break;
-//                }
-//            }
-//        }
-
-
-
-
-
-//            while(!Thread.currentThread().isInterrupted()) {
-//                try {
-//                    Thread.sleep(2000);
-//                } catch (InterruptedException e) {
-//                    Thread.currentThread().interrupt();
-//                }
-//            }
-
-
-//            for (int i=0;i<=100000000;i++){
-//                if(i==100000000){
-//                    apple.reset(arrGrass.get(randomApple()[0]).getX(),arrGrass.get(randomApple()[1]).getY());
-//                }
-//            }
-
-//            timer=new Timer();
-//            timer.schedule(new TimerTask() {
-//                @Override
-//                public void run() {
-//                    apple.reset(arrGrass.get(randomApple()[0]).getX(),arrGrass.get(randomApple()[1]).getY());
-//                }
-//            },500,7000);
-
-//            TimerTask task=new TimerTask() {
-//                @Override
-//                public void run() {
-//                    apple.reset(arrGrass.get(randomApple()[0]).getX(),arrGrass.get(randomApple()[1]).getY());
-//                }
-//            };
-//            timer.schedule(task,0,5000);
-//
-
-
-//            runnable=new Runnable() {
-//                @Override
-//                public void run() {
-//                    invalidate();
-//                }
-//            };
-//            while (true){
-//                //Thread.sleep(3000);
-//                apple.reset(arrGrass.get(randomApple()[0]).getX(),arrGrass.get(randomApple()[1]).getY());
-//                handler.postDelayed(runnable,1000);
-//            }
-
+        handler.postDelayed(r,100);
 
 
         for (int i=1; i!=snake.getArrPartSnake().size();i++){
             if (snake.getArrPartSnake().get(0).getrBody().intersect(snake.getArrPartSnake().get(i).getrBody())){/////
                 dead=true;
-                Log.d("start", "Фор на столкновение с телом");
-                snake.setMove_top(false);
-                snake.setMove_right(false);
-                snake.setMove_left(false);
-                snake.setMove_bottom(false);
             }
         }
 
@@ -251,41 +164,25 @@ public class GameView extends View {
         {
             if(i<=12 &&snake.getArrPartSnake().get(0).getrBody().intersect(arrGrass.get(i).getR())){
                 dead=true;
-                Log.d("start", "Фор на столкновение со стеной ВЕРХ");
-                snake.setMove_top(false);
-                snake.setMove_right(false);
-                snake.setMove_left(false);
-                snake.setMove_bottom(false);
             }
             if(snake.getArrPartSnake().get(0).getrBody().intersect(arrGrass.get(i*13).getR())){
                 dead=true;
-                Log.d("start", "Фор на столкновение со стеной ЛЕВО");/// tupoy idiot
-                snake.setMove_top(false);
-                snake.setMove_right(false);
-                snake.setMove_left(false);
-                snake.setMove_bottom(false);
             }
             if(i>=1 && snake.getArrPartSnake().get(0).getrBody().intersect(arrGrass.get(i*13-1).getR())){
                 dead=true;
-                Log.d("start", "Фор на столкновение со стеной ПРАВО");
-                snake.setMove_top(false);
-                snake.setMove_right(false);
-                snake.setMove_left(false);
-                snake.setMove_bottom(false);
             }
             if(i<=12 && snake.getArrPartSnake().get(0).getrBody().intersect(arrGrass.get(272+i).getR())){
                 dead=true;
-                Log.d("start", "Фор на столкновение со стеной НИЗ");
-                snake.setMove_top(false);
-                snake.setMove_right(false);
-                snake.setMove_left(false);
-                snake.setMove_bottom(false);
             }
         }
 
 
         if (dead==true) {
             Log.d("start", "Змейка умерла");
+            snake.setMove_top(false);
+            snake.setMove_right(false);
+            snake.setMove_left(false);
+            snake.setMove_bottom(false);
             dead=false;////delete (Написала для того, чтобы дебагер потом не спамил мне каждый шаг напоминанием о том, что она уже сдохла)
         }
     }
@@ -312,6 +209,5 @@ public class GameView extends View {
         }
         return xy;
     }
-
 
 }

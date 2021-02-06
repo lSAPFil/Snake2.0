@@ -20,7 +20,6 @@ public class MainActivity extends AppCompatActivity {
         Constanta.SCREEEN_HEIGHT=dm.heightPixels;
         setContentView(R.layout.activity_main);
         GameView g= findViewById(R.id.gv);
-
         appleValue=findViewById(R.id.txt_score);
 //        recordValue=findViewById(R.id.txt_best_score);
         g.main = this;
@@ -28,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
 
         appleValue.setText(Integer.toString(valueApple));
 //        recordValue.setText(Integer.toString(valueRecord));
+
+
     }
 
 }
