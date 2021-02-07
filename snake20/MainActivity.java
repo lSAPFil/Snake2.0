@@ -36,8 +36,11 @@ public class MainActivity extends AppCompatActivity {
         g.main = this;
         appleValue.setText(Integer.toString(valueApple));
         recordValue.setText(Integer.toString(valueRecord));
+
         //newRecordValue.setText(Integer.toString(checkRecord(valueRecord)));
     }
+
+
 
 }
 

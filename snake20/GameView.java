@@ -5,10 +5,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -17,7 +20,8 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class GameView extends View {
+public class GameView extends View implements OnClickListener {
+
     private Bitmap bmGrass1,bmGrass2, bmSnake, bmApple,bmWall;
     private int h=21, w=12;
     public static int sizeOfMap=75*Constanta.SCREEN_WIDH/1080;
@@ -31,24 +35,31 @@ public class GameView extends View {
     private Apple apple;
     private boolean dead=false;
     public int valueApple=0;
-    public boolean touch=true;
-    public boolean guide=true;
-    public boolean guideOne=true;
-    public boolean guideTwo=true;
-    public boolean guideThree=true;
-    public boolean guideFhour=true;
-    public boolean guideFive=true;
     public boolean guide2=false;
-    public boolean restart=false;
-    public ImageView imaga;
+    public RelativeLayout imaga;
     public ImageView image1;
     public ImageView image2;
     public ImageView image3;
     public ImageView image4;
     public RelativeLayout imaga1;
     public long start = System.currentTimeMillis();
-    public GameView(Context context, @Nullable AttributeSet attrs){ /////////Данный класс отрисовывается только один раз. Он не повторяется (на случай если ты будешь сомневаться)
+    private SoundPool sounds;
+    private int die;
+    private int eat;
+    private int music;
+
+
+    public GameView(Context context, @Nullable AttributeSet attrs){
+
+
         super(context, attrs);
+
+        sounds = new SoundPool(1, AudioManager.STREAM_MUSIC,0);
+        die = sounds.load(context, R.raw.die, 1);
+        eat = sounds.load(context, R.raw.eat, 1);
+        music = sounds.load(context, R.raw.music, 1);
+
+
         bmGrass1= BitmapFactory.decodeResource(this.getResources(),R.drawable.grass);
         bmGrass1=Bitmap.createScaledBitmap(bmGrass1,sizeOfMap,sizeOfMap,true);
         bmGrass2= BitmapFactory.decodeResource(this.getResources(),R.drawable.grass03);
@@ -57,8 +68,6 @@ public class GameView extends View {
         bmSnake=Bitmap.createScaledBitmap(bmSnake,14*sizeOfMap,sizeOfMap,true);
         bmApple= BitmapFactory.decodeResource(this.getResources(),R.drawable.apple);
         bmApple=Bitmap.createScaledBitmap(bmApple,sizeOfMap,sizeOfMap,true);
-        bmWall=BitmapFactory.decodeResource(this.getResources(),R.drawable.wall);
-        bmWall=Bitmap.createScaledBitmap(bmWall,sizeOfMap,sizeOfMap,true);
         for(int i=0;i<(h+1);i++)
         {
             for(int j=0;j<(w+1);j++)
@@ -132,77 +141,30 @@ public class GameView extends View {
 
         canvas.drawColor(0xFF1B007C);
 
-
         for (int i=0; i<arrGrass.size();i++){
             canvas.drawBitmap(arrGrass.get(i).getBm(),arrGrass.get(i).getX(),arrGrass.get(i).getY(), null);
         }
-        int p=0;
-        ////////////////////////////////////////////////////////////////////////
-        /////СТАРЫЙ ВАР (без картинок)
-        ////////////////////////////////////////////////////////////////////////
-        if(guide==true){
-           if(move==true){
-               imaga.setVisibility(INVISIBLE);
-               guide2=true;
-           }
-        }
+
+        //sounds.play(music, 1, 1, 0, 10, 0);
+
+
+        image1.setOnClickListener(this);
+        image2.setOnClickListener(this);
+        image3.setOnClickListener(this);
+        image4.setOnClickListener(this);
+        imaga.setOnClickListener(this);
 
             if(guide2==true){
                 snake.update();
                 snake.draw(canvas);
                 apple.draw(canvas);
             }
-///////////////////////////////////////////////////////////////////////////
-//        НОВЫЙ ВАР, КОТОРЫЙ НЕ РАБОТАЕТ, сволочь
-/////////////////////////////////////////////////////////////////////////
 
-//            if(guide==true){
-//                if(move==true){
-//                    image1.setVisibility(INVISIBLE);
-//                    image2.setVisibility(VISIBLE);
-//                    guideOne=false;
-//                }
-//                if(guideOne==false){
-//                    if(move=true){
-//                        image2.setVisibility(INVISIBLE);
-//                        image3.setVisibility(VISIBLE);
-//                        guideTwo=false;
-//                        guideOne=true;
-//                    }
-//                }
-//                if(guideTwo==false){
-//                    if(move=true){
-//                        image3.setVisibility(INVISIBLE);
-//                        image4.setVisibility(VISIBLE);
-//                        guideThree=false;
-//                        guideTwo=true;
-//                    }
-//                }
-//                if(guideThree==false){
-//                    if(move=true){
-//                        image4.setVisibility(INVISIBLE);
-//                        imaga.setVisibility(VISIBLE);
-//                        guideFhour=false;
-//                        guideThree=true;
-//                    }
-//                }
-//                if(guideFhour==false){
-//                    if(move=true){
-//                        image4.setVisibility(INVISIBLE);
-//                        imaga.setVisibility(VISIBLE);
-//                        guide2=false;
-//                        guideFhour=true;
-//                    }
-//                }
-//            }
-//        if(guide2==true){
-//            snake.update();
-//            snake.draw(canvas);
-//            apple.draw(canvas);
-//        }
-//
-        ///////////////////////////////////////////////////////////////////////////////////////////
+
             if(snake.getArrPartSnake().get(0).getrBody().intersect(apple.getR())){
+                if(dead==false){
+                    sounds.play(eat, 1, 1, 0, 0, 0);
+                }
                 randomApple();
                 this.valueApple++;
                 apple.reset(arrGrass.get(randomApple()[0]).getX(),arrGrass.get(randomApple()[1]).getY());
@@ -233,20 +195,28 @@ public class GameView extends View {
             {
                 if(i<=12 &&snake.getArrPartSnake().get(0).getrBody().intersect(arrGrass.get(i).getR())){
                     dead=true;
+                    sounds.play(die, 1, 1, 0, 0, 1);
+
                 }
                 if(snake.getArrPartSnake().get(0).getrBody().intersect(arrGrass.get(i*13).getR())){
                     dead=true;
+                    sounds.play(die, 1, 1, 0, 0, 1);
+
                 }
                 if(i>=1 && snake.getArrPartSnake().get(0).getrBody().intersect(arrGrass.get(i*13-1).getR())){
                     dead=true;
+                    sounds.play(die, 1, 1, 0, 0, 1);
+
                 }
                 if(i<=12 && snake.getArrPartSnake().get(0).getrBody().intersect(arrGrass.get(272+i).getR())){
                     dead=true;
+                    sounds.play(die, 1, 1, 0, 0, 1);
+
                 }
                 if(dead==true){
+
                     //Log.d("start", "Змейка умерла");
                     super.draw(canvas);
-
                     canvas.drawColor(0xFF1B007C);
 
 
@@ -289,6 +259,33 @@ public class GameView extends View {
 
         }
         return xy;
+    }
+
+
+    @Override
+    public void onClick(View view) {
+        switch(view.getId()) {
+            case R.id.helpPage1:
+                image1.setVisibility(View.INVISIBLE);
+                image2.setVisibility(View.VISIBLE);
+                break;
+            case R.id.helpPage2:
+                image2.setVisibility(View.INVISIBLE);
+                image3.setVisibility(View.VISIBLE);
+                break;
+            case R.id.helpPage3:
+                image3.setVisibility(View.INVISIBLE);
+                image4.setVisibility(View.VISIBLE);
+                break;
+            case R.id.helpPage4:
+                image4.setVisibility(View.INVISIBLE);
+                imaga.setVisibility(View.VISIBLE);
+                break;
+            case R.id.swipe:
+                imaga.setVisibility(View.INVISIBLE);
+                this.guide2 = true;
+                break;
+        }
     }
 
 
