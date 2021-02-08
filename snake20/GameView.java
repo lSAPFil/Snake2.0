@@ -9,6 +9,7 @@ import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class GameView extends View implements OnClickListener {
-
     private Bitmap bmGrass1,bmGrass2, bmSnake, bmApple,bmWall;
     private int h=21, w=12;
     public static int sizeOfMap=75*Constanta.SCREEN_WIDH/1080;
@@ -158,6 +158,8 @@ public class GameView extends View implements OnClickListener {
                 snake.update();
                 snake.draw(canvas);
                 apple.draw(canvas);
+                Log.d("start","ЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙ "+main.r);
+
             }
 
 
@@ -225,6 +227,7 @@ public class GameView extends View implements OnClickListener {
                     }
 
                     main.recordValue.setText(Integer.toString(this.valueApple));
+                    main.newRecordValue.setText(Integer.toString(this.valueApple));
                     imaga1.setVisibility(View.VISIBLE);
                     if(move==true){
                         imaga1.setVisibility(View.INVISIBLE);
